@@ -53,9 +53,9 @@ RateLimiter rl = new RateLimiter(capacity, refillRate, intervalInMinutes, ttl);
 ```java
 RateLimiter rl = new RateLimiter(5, 5, 1, 300);
 
-boolean allowed = rl.isAllowed("user@example.com");
+int allowed = rl.isAllowed("user@example.com");
 
-if (allowed) {
+if (allowed>0) {
     // Process request
 } else {
     // Reject request (rate limited)

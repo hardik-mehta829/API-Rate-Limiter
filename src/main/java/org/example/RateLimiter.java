@@ -7,13 +7,15 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RateLimiter {
     private  int cap;
     private  int refill;
     private int intervalInMin;
-    private  final String fixedUrl="YOUR_URL";
-    private final String token="YOUR-TOKEN";
+    private  final String fixedUrl="https://special-fish-67754.upstash.io/";
+    private final String token="gQAAAAAAAQiqAAIncDJiNjc5NWExMjIxZGM0NGU3YTgwNDI4OGZjZjhlMGJiN3AyNjc3NTQ";
     private int ttl;
     public int getInterval()
     {
@@ -26,7 +28,7 @@ public class RateLimiter {
         this.intervalInMin=interval;
         this.ttl=ttl;
     }
-     public boolean isAllowed(String userId) throws IOException, InterruptedException {
+     public int isAllowed(String userId) throws IOException, InterruptedException {
         int start,end,tokens,incr;
        long issuedat,currTime=System.currentTimeMillis();
         boolean f=true;
@@ -48,7 +50,7 @@ public class RateLimiter {
 
         if(resToken.contains("\"error\"")|| resTime.contains("\"error\""))
         {
-                return true;
+               return cap;
         }
         else
         {
@@ -75,6 +77,7 @@ public class RateLimiter {
                 URL=fixedUrl+"expire/"+redisKey+"/"+ttl;
                 req=HttpRequest.newBuilder().uri(URI.create(URL)).header("Authorization","Bearer "+token).build();
                 client.send(req,BodyHandlers.ofString());
+
             }
             else
             {
@@ -98,13 +101,13 @@ public class RateLimiter {
                         URL=fixedUrl+"hset/"+redisKey+"/tokens/"+tokens+"/issuedat/"+currTime;
                         req=HttpRequest.newBuilder().uri(URI.create(URL)).header("Authorization","Bearer "+token).build();
                         client.send(req,BodyHandlers.ofString());
+
                     }
                 }
                 else
                 {
                     if(incr==0)
                     {
-                        f=false;
 
                     }
                     else
@@ -120,7 +123,7 @@ public class RateLimiter {
             }
 
         }
-        return f;
+        return tokens;
     }
 
 
