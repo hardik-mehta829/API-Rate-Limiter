@@ -76,8 +76,8 @@ You need:
 Update these inside the class:
 
 ```java
-private final String fixedUrl = "YOUR_UPSTASH_REDIS_URL";
-private final String token = "YOUR_UPSTASH_TOKEN";
+private final String fixedUrl = "YOUR_URL";
+private final String token = "YOUR_TOKEN";
 ```
 
 ---
