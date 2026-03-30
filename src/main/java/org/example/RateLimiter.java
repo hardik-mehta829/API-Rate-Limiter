@@ -14,8 +14,8 @@ public class RateLimiter {
     private  int cap;
     private  int refill;
     private int intervalInMin;
-    private  final String fixedUrl="https://special-fish-67754.upstash.io/";
-    private final String token="gQAAAAAAAQiqAAIncDJiNjc5NWExMjIxZGM0NGU3YTgwNDI4OGZjZjhlMGJiN3AyNjc3NTQ";
+    private  final String fixedUrl="YOUR_URL";
+    private final String token="YOUR_TOKEN";
     private int ttl;
     public int getInterval()
     {
