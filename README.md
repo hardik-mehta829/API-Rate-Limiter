@@ -104,9 +104,6 @@ The library interacts with Redis using:
 
 * 🔒 Add Lua scripting for atomic operations
 * ⚡ Reduce number of HTTP calls
-* 🧵 Improve concurrency handling
-* 📊 Add metrics/logging support
-* 🔧 Configurable via external properties
 
 ---
 
