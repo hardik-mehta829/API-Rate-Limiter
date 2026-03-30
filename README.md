@@ -51,19 +51,30 @@ RateLimiter rl = new RateLimiter(capacity, refillRate, intervalInMinutes, ttl);
 ## 🧪 Usage Example
 
 ```java
-RateLimiter rl = new RateLimiter(5, 5, 1, 300);
+List<Integer> result = rt.isAllowed(email);
 
-int allowed = rl.isAllowed("user@example.com");
+int allowed = result.get(0);
+int tokensLeft = result.get(1);
+int retryAfter = result.get(2);
 
-if (allowed>0) {
-    // Process request
-} else {
-    // Reject request (rate limited)
-}
+if (allowed > 0) {
+        // Process request
+        } else {
+        // Reject request (rate limited)
+        }
 ```
 
 ---
+## Return Value Format
 
+The isAllowed() method returns a List<Integer> with the following structure:
+
+* Index 0 → allowed (1 = allowed, 0 = blocked)
+* Index 1 → tokensLeft (remaining tokens after request)
+* Index 2 → retryAfter (time in seconds before next allowed request)
+* Notes:
+retryAfter = -1 when requests are still allowed (tokens available)
+retryAfter >= 0 when the user is rate-limited
 ## 🔌 Redis Setup (Upstash)
 
 This project uses **Upstash Redis REST API**.

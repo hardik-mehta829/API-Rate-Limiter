@@ -14,8 +14,8 @@ public class RateLimiter {
     private  int cap;
     private  int refill;
     private int intervalInMin;
-    private  final String fixedUrl="YOUR_URL";
-    private final String token="YOUR_TOKEN";
+    private  final String fixedUrl="https://special-fish-67754.upstash.io/";
+    private final String token="gQAAAAAAAQiqAAIncDJiNjc5NWExMjIxZGM0NGU3YTgwNDI4OGZjZjhlMGJiN3AyNjc3NTQ";
     private int ttl;
     public int getInterval()
     {
@@ -28,11 +28,11 @@ public class RateLimiter {
         this.intervalInMin=interval;
         this.ttl=ttl;
     }
-     public int isAllowed(String userId) throws IOException, InterruptedException {
+     public List<Integer> isAllowed(String userId) throws IOException, InterruptedException {
         int start,end,tokens,incr;
        long issuedat,currTime=System.currentTimeMillis();
         boolean f=true;
-
+        List<Integer> lp=new ArrayList<>();
 
         HttpClient client = HttpClient.newHttpClient();
         String redisKey="rate_limit:"+userId;
@@ -50,7 +50,9 @@ public class RateLimiter {
 
         if(resToken.contains("\"error\"")|| resTime.contains("\"error\""))
         {
-               return cap;
+               lp.add(1);
+               lp.add(cap);
+               lp.add(-1);
         }
         else
         {
@@ -77,7 +79,9 @@ public class RateLimiter {
                 URL=fixedUrl+"expire/"+redisKey+"/"+ttl;
                 req=HttpRequest.newBuilder().uri(URI.create(URL)).header("Authorization","Bearer "+token).build();
                 client.send(req,BodyHandlers.ofString());
-
+                lp.add(1);
+                lp.add(tokens);
+                lp.add(-1);
             }
             else
             {
@@ -93,6 +97,9 @@ public class RateLimiter {
                         URL=fixedUrl+"hset/"+redisKey+"/tokens/"+tokens;
                         req=HttpRequest.newBuilder().uri(URI.create(URL)).header("Authorization","Bearer "+token).build();
                         client.send(req,BodyHandlers.ofString());
+                        lp.add(1);
+                        lp.add(tokens);
+                        lp.add(-1);
                     }
                     else
                     {
@@ -101,6 +108,9 @@ public class RateLimiter {
                         URL=fixedUrl+"hset/"+redisKey+"/tokens/"+tokens+"/issuedat/"+currTime;
                         req=HttpRequest.newBuilder().uri(URI.create(URL)).header("Authorization","Bearer "+token).build();
                         client.send(req,BodyHandlers.ofString());
+                        lp.add(1);
+                        lp.add(tokens);
+                        lp.add(-1);
 
                     }
                 }
@@ -108,7 +118,11 @@ public class RateLimiter {
                 {
                     if(incr==0)
                     {
-
+                            lp.add(0);
+                            lp.add(tokens);
+                            double d=(double)(currTime-issuedat)/1000D;
+                            d=Math.ceil(d);
+                            lp.add(intervalInMin*60-(int)d);
                     }
                     else
                     {
@@ -118,13 +132,22 @@ public class RateLimiter {
                         URL=fixedUrl+"hset/"+redisKey+"/tokens/"+tokens+"/issuedat/"+currTime;
                         req=HttpRequest.newBuilder().uri(URI.create(URL)).header("Authorization","Bearer "+token).build();
                         client.send(req,BodyHandlers.ofString());
+                        lp.add(1);
+                        lp.add(tokens);
+                        lp.add(-1);
                     }
                 }
             }
 
         }
-        return tokens;
+        return lp;
     }
 
+    static void main() {
+        long a=268,b=1234;
+        double d=(b-a)/1000D;
+        d=Math.ceil(d);
+        System.out.println(d);
+    }
 
 }
